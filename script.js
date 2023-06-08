@@ -2,6 +2,7 @@ const qs = (el) => document.querySelector(el)
 const qsAll = (el) => document.querySelectorAll(el)
 let modalQt = 1
 
+//1.Lista de pizzas
 
 pizzaJson.map((item, index)=>{
     let pizzaItem = qs('.models .pizza-item').cloneNode(true);
@@ -43,5 +44,39 @@ pizzaJson.map((item, index)=>{
         }, 200)
     })
     qs('.pizza-area').append(pizzaItem)
+
+})
+
+//2.Eventos do Modal
+
+const closeModal = () =>{
+    qs('.pizzaWindowArea').style.opacity = 0;
+    setTimeout(()=>{
+        qs('.pizzaWindowArea').style.display = 'none'
+
+    }, 200)
+
+}
+
+qsAll('.pizzaInfo--cancelMobileButton, .pizzaInfo--cancelButton').forEach((item)=>{
+    item.addEventListener('click', closeModal);
+})
+
+qs('.pizzaInfo--qtmenos').addEventListener('click', ()=>{
+    if( modalQt > 1){
+        modalQt --;
+        qs('.pizzaInfo--qt').innerHTML = modalQt
+    } else return
+} )
+qs('.pizzaInfo--qtmais').addEventListener('click', ()=>{
+    modalQt ++;
+    qs('.pizzaInfo--qt').innerHTML = modalQt
+} )
+
+qsAll('.pizzaInfo--size').forEach((size, sizeIndex)=>{
+    size.addEventListener('click', (e)=>{
+        qs('.pizzaInfo--size.selected').classList.remove('selected')
+        size.classList.add('selected')
+    })
 
 })
