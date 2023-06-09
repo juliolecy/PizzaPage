@@ -1,7 +1,8 @@
 const qs = (el) => document.querySelector(el)
 const qsAll = (el) => document.querySelectorAll(el)
 let modalQt = 1
-
+let modalKey = 0;
+let cart = []
 //1.Lista de pizzas
 
 pizzaJson.map((item, index)=>{
@@ -19,6 +20,7 @@ pizzaJson.map((item, index)=>{
         let key = e.target.closest('.pizza-item').getAttribute('data-key');
 
         modalQt = 1;
+        modalKey = key
 
         //console.log(pizzaJson[key])
         qs('.pizzaBig img').src = pizzaJson[key].img
@@ -80,3 +82,64 @@ qsAll('.pizzaInfo--size').forEach((size, sizeIndex)=>{
     })
 
 })
+
+
+//3.Carrinho de compras
+qs('.pizzaInfo--addButton').addEventListener('click', ()=>{
+// inf: pizza 'modalKey' , tamanho selecionado 'size' , quantidade 'modalQt'
+let size = parseInt(qs('.pizzaInfo--size.selected').getAttribute('data-key'))
+
+let identifier = pizzaJson[modalKey].id+'@'+size;
+
+let key = cart.findIndex((item) => item.identifier == identifier)
+if(key > -1){
+    cart[key].qt += modalQt
+} else{
+
+    cart.push({
+        identifier,
+        id:pizzaJson[modalKey].id,
+        size,
+        qt: modalQt
+    })
+}
+updateCart();
+closeModal();
+})
+
+const updateCart = () =>{
+    
+    if(cart.length>0){
+        qs('aside').classList.add('show');
+        qs('.cart').innerHTML = ''; // IMPORTANTE -> A cada novo pedido feito, a div é 'esvaziada' e novamente preenchida.
+        for (let i in cart){
+        let pizzaItem = pizzaJson.find((item)=>item.id == cart[i].id )
+        let cartItem = qs('.models .cart--item').cloneNode(true);
+
+        let pizzaSizeName 
+        switch (cart[i].size) {
+            case 0:
+                pizzaSizeName = 'P'
+                break;
+            case 1:
+                pizzaSizeName = 'M'
+                break;
+            case 2:
+                pizzaSizeName = 'G'
+                break;
+            default:
+                break;
+        }
+
+        let pizzaName = `${pizzaItem.name} (${pizzaSizeName})`
+
+        cartItem.querySelector('img').src = pizzaItem.img;
+        cartItem.querySelector('.cart--item-nome').innerHTML = pizzaName
+        cartItem.querySelector('.cart--item--qt').innerHTML = cart[i].qt
+
+        qs('.cart').append(cartItem);
+    }
+    } else {
+        qs('aside').classList.remove('show')
+    }
+}
